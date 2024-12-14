@@ -1,15 +1,22 @@
+import { geradorDesculpas } from "@/services/ai/generator";
 import styles from "@/styles";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function Index() {
   const [desculpa, setDesculpa] = useState("")
+  const [resposta, setResposta] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
-  const gerarDesculpa = () => {
+  const callDesculpa = async () => {
+    console.log("chegout aqui")
     if (desculpa.length < 5) {
       alert("Desculpe, o evento precisa ter mais de 5 caracteres")
       return;
     }
+    
+    const result = await geradorDesculpas(desculpa);
+    setResposta(result)
   }
 
   return (
@@ -24,14 +31,14 @@ export default function Index() {
         style={styles.input}
         placeholder="Digite o evento que você quer evitar ..."></TextInput>
 
-      <TouchableOpacity style={styles.button} onPress={gerarDesculpa}>
-        <Text style={styles.buttonText}>Gerar desculpas infalível!</Text>
+      <TouchableOpacity style={styles.button} onPress={callDesculpa}>
+        <Text style={styles.buttonText}>{ !isLoading ? "Gerar desculpas infalível!" : ""}</Text>
       </TouchableOpacity>
 
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Sua desculpa está pronta:</Text>
-        <Text style={styles.cardText}>a desculpa gerada pela IA</Text>
+        <Text style={styles.cardText}>{resposta}</Text>
       </View>
 
     </View>
