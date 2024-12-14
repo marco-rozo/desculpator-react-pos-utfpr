@@ -1,15 +1,34 @@
+import { geradorDesculpa } from "@/services/ai/generator";
 import styles from "@/styles";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { MotiView } from 'moti';
 
 export default function Index() {
   const [desculpa, setDesculpa] = useState("")
+  const [resposta, setResposta] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
-  const gerarDesculpa = () => {
+  const callDesculpa = async () => {
     if (desculpa.length < 5) {
       alert("Desculpe, o evento precisa ter mais de 5 caracteres")
       return;
     }
+
+    setIsLoading(true);
+    setDesculpa("")
+    setResposta("")
+
+    try {
+      const result = await geradorDesculpa(desculpa);
+      setResposta(result)
+    } catch (error) {
+      alert(error)
+    } finally {
+      setIsLoading(false);
+    }
+
+
   }
 
   return (
@@ -24,15 +43,23 @@ export default function Index() {
         style={styles.input}
         placeholder="Digite o evento que você quer evitar ..."></TextInput>
 
-      <TouchableOpacity style={styles.button} onPress={gerarDesculpa}>
-        <Text style={styles.buttonText}>Gerar desculpas infalível!</Text>
+      <TouchableOpacity style={styles.button} onPress={callDesculpa}>
+        <Text style={styles.buttonText}>{isLoading ? "Carregando..." : "Gerar desculpas infalível!"}</Text>
       </TouchableOpacity>
 
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Sua desculpa está pronta:</Text>
-        <Text style={styles.cardText}>a desculpa gerada pela IA</Text>
-      </View>
+      {
+        resposta && (
+          <MotiView
+            style={styles.card}
+            from={{ opacity: 0, translateX: 200 }}
+            animate={{ opacity: 1, translateX: 0 }}
+          >
+            <Text style={styles.cardTitle}>Sua desculpa está pronta:</Text>
+            <Text style={styles.cardText}>{resposta}</Text>
+          </MotiView>
+        )
+      }
 
     </View>
   );
