@@ -53,8 +53,5 @@ export async function geradorDesculpas(desculpa: string) {
     max_tokens: 1024,
   });
 
-  debugger;
-  console.log(chatCompletion.choices[0]?.message?.content);
-
   return chatCompletion.choices[0]?.message?.content || "";
 }
